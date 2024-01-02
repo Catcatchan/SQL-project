@@ -1,0 +1,13 @@
+--The listing with highest total revenue (top 10)
+select listing_id, neighbourhood, host_id,price, total_count_host, price*(sum(total_count_host)) as Revenue
+from listing
+group by listing_id
+order by Revenue desc
+limit 10;
+
+--The listing with lowest total revenue (lowest 10)
+select listing_id, neighbourhood, host_id, price, total_count_host, price*(sum(total_count_host)) as Revenue
+from listing
+group by listing_id
+order by Revenue asc
+limit 10;
