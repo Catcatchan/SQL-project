@@ -1,0 +1,17 @@
+--Number of listings in differnt neighbourhood
+select neighbourhood, count(listing_id) Unit
+from listing
+group by neighbourhood
+order by Unit desc;
+
+--Neighbourbood with the highest number of hosting in Hong Kong
+select neighbourhood, sum(total_count_host) Total_host
+from listing
+group by neighbourhood
+order by Total_host desc;
+
+--The average revenue according to neighbourhood
+select neighbourhood, round(avg(price*total_count_host),2) as average_revenue
+from listing
+group by neighbourhood 
+order by average_revenue desc
