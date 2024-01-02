@@ -1,0 +1,76 @@
+--The average rating on 6 areas of rating
+select 
+	round(avg(review_scores_accuracy),2) accuracy,
+	round(avg(review_scores_cleanliness),2) clean, 
+	round(avg(review_scores_checkin),2) checkin, 
+	round(avg(review_scores_communication),2) communication,
+	round(avg(review_scores_location),2) location,
+	round(avg(review_scores_value),2) value
+from score
+--The average score on cleanliness is at lowest, followed by value
+
+--The correlation between average score and score on cleanliness
+select corr( 
+	review_scores_rating,
+	review_scores_cleanliness
+)
+from score
+
+--Categorize of listings according based on review score
+select  
+(case 
+	when review_scores_rating >3.5 then 'Positive'
+	when review_scores_rating <2.5 then 'Negative'
+	else 'Neutral'
+	end) as review_cat, count(1)
+from score
+group by review_cat
+
+--Creating table of price, rating, category
+create or replace view price_cat as (
+with review_cat as (
+select 
+	listing_id,
+	review_scores_rating,
+	(case 
+		when review_scores_rating >3.5 then 'Positive'
+		when review_scores_rating <2.5 then 'Negative'
+		else 'Neutral'
+		end) as category
+from score
+)
+select 
+	l.listing_id,
+	l.price,
+	t.review_scores_rating,
+	t.category
+from listing l
+join review_cat t on l.listing_id = t.listing_id
+
+--Average price and socre of different categories
+select 
+	category,
+	round(avg(price),2) average_price,
+	round(avg(review_scores_rating), 2) average_score
+from price_cat
+group by category
+
+--Correlation between price and rating
+select corr(
+	price, 
+	review_scores_rating
+) 
+from price_cat
+	
+--Listings require improvement on cleanliness 
+create or replace view blacklist as (
+select listing.host_id, reviews.*, price_cat.price, price_cat.review_scores_rating, price_cat.category
+from price_cat
+join reviews
+on price_cat.listing_id=reviews.listing_id
+join listing
+on price_cat.listing_id=listing.listing_id
+where (reviewer_comment like '%dirty%' or 
+reviewer_comment like '%unclean%') and
+category = 'Negative'
+)
