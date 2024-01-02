@@ -1,0 +1,42 @@
+-- Create table listing
+create table listing (
+	listing_id SERIAL primary key, 
+	price integer,
+	host_id integer,
+	neighbourhood text,
+	property_type text,
+	availability_30 integer,
+	availability_60 integer,
+	availabiltiy_90 integer,
+	total_count_host integer,
+	total_count_host_entire_homes integer,
+	total_count_host_private_rooms integer,
+	total_count_host_shared_rooms integer	
+);
+
+--Create table score
+Create table score (
+	listing_id integer,
+	number_of_reviews integer,
+	number_of_review_l30d integer,
+	review_scores_rating numeric (4,2),
+	review_scores_accuracy numeric (4,2),
+	review_scores_cleanliness numeric (4,2),
+	review_scores_checkin numeric(4,2),
+	review_scores_communication numeric (4,2),
+	review_scores_location numeric (4,2),
+	review_scores_value numeric (4,2),
+	reviews_per_month numeric (3,2)
+	Primary key listing_id
+);
+
+-- Create table reviews
+create table reviews (
+	listing_id integer,
+	review_date date,
+	reviewer_id integer,
+	revierer_name text, 
+	reviewer_comment text
+	primary key reviewer_id
+	foreign key listing_id
+);
